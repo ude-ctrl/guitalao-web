@@ -47,6 +47,7 @@ Fundação de produto, pedagogia, design e arquitetura em consolidação. Ainda 
 
 - [Visão do produto](docs/VISAO_DO_PRODUTO.md)
 - [Arquitetura pedagógica](docs/ARQUITETURA_PEDAGOGICA.md)
+- [Arquitetura técnica](docs/ARQUITETURA_TECNICA.md)
 - [Auditoria do Piloto](docs/AUDITORIA_DO_PILOTO.md)
 - [Design system](docs/DESIGN_SYSTEM.md)
 - [Protocolo de desenvolvimento](docs/PROTOCOLO_DE_DESENVOLVIMENTO.md)
