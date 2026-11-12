@@ -69,3 +69,37 @@ describe('Fundação e navegação', () => {
     expect(window.location.hash).toBe('#/praticar');
   });
 });
+
+describe('Lição de intervalos', () => {
+  it('preserva tom e exercício no link da lição e na navegação global', async () => {
+    const user = userEvent.setup();
+    renderApp('/estudo');
+    await user.selectOptions(screen.getByLabelText('Tônica'), '8');
+    await user.selectOptions(screen.getByLabelText('Intervalo'), 'quinta');
+    await user.click(
+      screen.getByRole('link', { name: /Levar este exercício/ }),
+    );
+    expect(window.location.hash).toBe('#/praticar?tom=8&intervalo=quinta');
+    expect(screen.getByLabelText('Tônica')).toHaveValue('8');
+    expect(screen.getByLabelText('Intervalo')).toHaveValue('quinta');
+    await user.click(screen.getByRole('link', { name: 'Estudo' }));
+    expect(window.location.hash).toBe('#/estudo?tom=8&intervalo=quinta');
+  });
+  it('orienta a revisão e limpa a resposta ao trocar o intervalo', async () => {
+    const user = userEvent.setup();
+    renderApp('/estudo');
+    await user.click(screen.getByRole('button', { name: '3 semitons' }));
+    expect(screen.getByRole('status')).toHaveTextContent('Tente novamente');
+    await user.click(screen.getByRole('button', { name: '4 semitons' }));
+    expect(screen.getByRole('status')).toHaveTextContent('Isso!');
+    await user.selectOptions(screen.getByLabelText('Intervalo'), 'quinta');
+    expect(screen.getByRole('status')).toHaveTextContent(
+      'Escolha uma resposta',
+    );
+  });
+  it('abre links com parâmetros inválidos usando um contexto válido', () => {
+    renderApp('/praticar?tom=-2&intervalo=desconhecido');
+    expect(screen.getByLabelText('Tônica')).toHaveValue('5');
+    expect(screen.getByLabelText('Intervalo')).toHaveValue('terca');
+  });
+});

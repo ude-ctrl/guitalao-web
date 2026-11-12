@@ -12,7 +12,7 @@ import { PracticePage } from '../pages/PracticePage';
 import styles from './App.module.css';
 
 function Shell() {
-  const { pathname } = useLocation();
+  const { pathname, search } = useLocation();
   const main = useRef<HTMLElement>(null);
   const previousPath = useRef(pathname);
   const practice = pathname === '/praticar';
@@ -42,7 +42,7 @@ function Shell() {
           ].map(([to, label]) => (
             <NavLink
               key={to}
-              to={to}
+              to={`${to}${search}`}
               className={({ isActive }) =>
                 isActive ? styles.active : undefined
               }
@@ -55,7 +55,7 @@ function Shell() {
       <main id="conteudo" ref={main} tabIndex={-1} className={styles.main}>
         <Outlet />
       </main>
-      <footer className={styles.footer}>Fundação técnica · F0</footer>
+      <footer className={styles.footer}>Intervalos na guitarra · F1</footer>
     </div>
   );
 }

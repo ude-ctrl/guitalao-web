@@ -41,7 +41,7 @@ Arquitetura planejada:
 
 ## Estado atual
 
-Fundação de produto, pedagogia, design e arquitetura em consolidação. Ainda não há aplicação implementada.
+F0 implementada e F1 disponível para homologação: lição interativa de intervalos, áudio sintetizado e prática com contexto compartilhado. Veja [validação da F1](docs/F1_INTERVALOS.md).
 
 ## Documentação
 
@@ -52,3 +52,22 @@ Fundação de produto, pedagogia, design e arquitetura em consolidação. Ainda 
 - [Design system](docs/DESIGN_SYSTEM.md)
 - [Protocolo de desenvolvimento](docs/PROTOCOLO_DE_DESENVOLVIMENTO.md)
 - [Roadmap do MVP](docs/ROADMAP_MVP.md)
+
+## Executar e validar
+
+Requer Node 24.
+
+```sh
+npm ci
+npm run dev
+```
+
+```sh
+npm run lint
+npm test
+npm run build
+```
+
+## Publicação
+
+Em Settings → Pages, selecione GitHub Actions como fonte. O workflow de publicação valida e publica a branch `main`. Caminho público configurado: `/guitalao-web/`.
