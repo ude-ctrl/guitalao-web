@@ -1,3 +1,4 @@
+import { intervalWav } from '../../audio/intervalWav';
 import { playInterval } from '../../audio/intervalPlayer';
 import { useEffect, useRef, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
@@ -26,6 +27,8 @@ export function IntervalExperience({
     root,
     interval.semitones,
   );
+  const wav = intervalWav([rootMidi, targetMidi]);
+  const testWav = intervalWav([69]);
   const [answer, setAnswer] = useState<number | null>(null);
   const [playing, setPlaying] = useState(false);
   const [activeNote, setActiveNote] = useState<number | null>(null);
@@ -177,6 +180,39 @@ export function IntervalExperience({
           antes de ouvir.
         </p>
         {audioError && <p role="alert">{audioError}</p>}
+        <details className={styles.audioHelp}>
+          <summary>Sem som? Usar player alternativo</summary>
+          <p>
+            Este player usa um arquivo WAV local, independente do motor Web
+            Audio. O intervalo é o mesmo; o mapa não acompanha este player.
+          </p>
+          <label htmlFor="interval-audio">
+            Tônica e intervalo — player alternativo
+          </label>
+          <audio
+            id="interval-audio"
+            key={wav}
+            controls
+            preload="none"
+            src={wav}
+            onPlay={() => {
+              generation.current += 1;
+              stop.current?.();
+              setPlaying(false);
+              setActiveNote(null);
+            }}
+          />
+          <label htmlFor="test-audio">
+            Teste de saída — Lá de referência (440 Hz)
+          </label>
+          <audio id="test-audio" controls preload="none" src={testWav} />
+          <p>
+            Se nem o teste emitir som, confira o volume da aba e a saída do Edge
+            no mixer do Windows. Se o teste funcionar e o intervalo não, informe
+            essa diferença.
+          </p>
+          <small>Áudio v2 · player WAV disponível</small>
+        </details>
       </section>
       <section className={styles.panel} aria-labelledby="apply-title">
         <p className={styles.eyebrow}>Aplicar na guitarra</p>

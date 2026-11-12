@@ -131,3 +131,22 @@
   color: var(--color-coffee);
   font-weight: 700;
 }
+
+.audioHelp {
+  margin-top: 1rem;
+}
+.audioHelp summary {
+  cursor: pointer;
+  min-height: 44px;
+  text-decoration: underline;
+}
+.audioHelp label {
+  display: block;
+  margin-top: 1rem;
+}
+.audioHelp audio {
+  display: block;
+  width: 100%;
+  max-width: 24rem;
+  margin: 0.5rem 0 1rem;
+}
