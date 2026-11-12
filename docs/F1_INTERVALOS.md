@@ -11,12 +11,12 @@ O recorte usa uma única corda para tornar explícita a relação casa–semitom
 - Contexto compartilhado por parâmetros `tom` e `intervalo` na rota hash. Links diretos funcionam no GitHub Pages.
 - Nenhum progresso armazenado. Respostas ficam apenas no componente.
 - Domínio musical puro separado da interface e do áudio.
-- Motor Web Audio incluído no bundle para criar e retomar o contexto diretamente no clique, com envelope curto e parada explícita; sem novas dependências. Nenhum contexto de áudio é criado antes da ação do usuário.
+- Áudio WAV PCM sintetizado localmente e reproduzido pelo player nativo do navegador. O botão principal usa o mesmo player; destaques acompanham os eventos de reprodução. O usuário confirmou funcionamento do player WAV no Edge; o motor Web Audio foi removido após permanecer sem som nesse navegador. Sem novas dependências.
 - Som sintetizado, sem pretensão de simular timbre de guitarra.
 
 ## Validação e homologação
 
-Instalação reproduzível com Node 24 validada na base F0. Lint, testes de domínio nos 12 tons, integração de navegação, feedback e agendamento/parada de áudio, além de build de produção, devem passar antes da revisão.
+Instalação reproduzível com Node 24 validada na base F0. Lint, testes de domínio nos 12 tons, integração de navegação, feedback e geração de WAV e reprodução/parada de áudio, além de build de produção, devem passar antes da revisão.
 
 A prévia gerenciada falhou com `relay could not open browser port 4173: timed out waiting for relay readiness`. Verificação visual em desktop/celular e audição em navegador permanecem pendentes. O teste automatizado de áudio verifica agendamento e cancelamento, não a qualidade percebida.
 

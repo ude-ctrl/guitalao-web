@@ -1,5 +1,4 @@
 import { intervalWav } from '../../audio/intervalWav';
-import { playInterval } from '../../audio/intervalPlayer';
 import { useEffect, useRef, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import {
@@ -28,7 +27,7 @@ export function IntervalExperience({
     interval.semitones,
   );
   const wav = intervalWav([rootMidi, targetMidi]);
-  const testWav = intervalWav([69]);
+  const audio = useRef<HTMLAudioElement>(null);
   const [answer, setAnswer] = useState<number | null>(null);
   const [playing, setPlaying] = useState(false);
   const [activeNote, setActiveNote] = useState<number | null>(null);
@@ -56,26 +55,32 @@ export function IntervalExperience({
     const current = ++generation.current;
     setPlaying(true);
     setAudioError('');
+    const player = audio.current;
+    if (!player) {
+      setPlaying(false);
+      return;
+    }
+    const cancel = () => {
+      player.pause();
+      player.currentTime = 0;
+      setPlaying(false);
+      setActiveNote(null);
+    };
+    stop.current = cancel;
     try {
-      const cancel = await playInterval(
-        [rootMidi, targetMidi],
-        (index) => setActiveNote(index),
-        () => {
-          setPlaying(false);
-          setActiveNote(null);
-        },
-      );
+      player.currentTime = 0;
+      await player.play();
       if (generation.current !== current) cancel();
-      else stop.current = cancel;
     } catch {
       if (generation.current === current) {
         setPlaying(false);
         setAudioError(
-          'Não foi possível iniciar o áudio. Tente novamente em um navegador com Web Audio.',
+          'Não foi possível iniciar o áudio. Tente o botão de reprodução do player abaixo.',
         );
       }
     }
   }
+
   const context = `?tom=${root}&intervalo=${interval.id}`;
   return (
     <div className={styles.lesson}>
@@ -180,39 +185,57 @@ export function IntervalExperience({
           antes de ouvir.
         </p>
         {audioError && <p role="alert">{audioError}</p>}
-        <details className={styles.audioHelp}>
-          <summary>Sem som? Usar player alternativo</summary>
-          <p>
-            Este player usa um arquivo WAV local, independente do motor Web
-            Audio. O intervalo é o mesmo; o mapa não acompanha este player.
-          </p>
-          <label htmlFor="interval-audio">
-            Tônica e intervalo — player alternativo
-          </label>
+        <div className={styles.audioHelp}>
+          <label htmlFor="interval-audio">Tônica e intervalo</label>
           <audio
+            ref={audio}
             id="interval-audio"
             key={wav}
             controls
             preload="none"
             src={wav}
-            onPlay={() => {
-              generation.current += 1;
-              stop.current?.();
+            onPlaying={() => {
+              const player = audio.current;
+              if (player)
+                stop.current = () => {
+                  player.pause();
+                  player.currentTime = 0;
+                  setPlaying(false);
+                  setActiveNote(null);
+                };
+              setPlaying(true);
+              setActiveNote(
+                audio.current && audio.current.currentTime >= 0.9 ? 1 : 0,
+              );
+            }}
+            onTimeUpdate={() => {
+              const player = audio.current;
+              if (player && !player.paused) {
+                const time = player.currentTime;
+                setActiveNote(
+                  time % 0.9 < 0.75
+                    ? Math.min(1, Math.floor(time / 0.9))
+                    : null,
+                );
+              }
+            }}
+            onPause={() => {
               setPlaying(false);
               setActiveNote(null);
             }}
+            onEnded={() => {
+              setPlaying(false);
+              setActiveNote(null);
+            }}
+            onError={() => {
+              setPlaying(false);
+              setActiveNote(null);
+              setAudioError(
+                'O navegador não conseguiu reproduzir o áudio. Atualize a página e tente novamente.',
+              );
+            }}
           />
-          <label htmlFor="test-audio">
-            Teste de saída — Lá de referência (440 Hz)
-          </label>
-          <audio id="test-audio" controls preload="none" src={testWav} />
-          <p>
-            Se nem o teste emitir som, confira o volume da aba e a saída do Edge
-            no mixer do Windows. Se o teste funcionar e o intervalo não, informe
-            essa diferença.
-          </p>
-          <small>Áudio v2 · player WAV disponível</small>
-        </details>
+        </div>
       </section>
       <section className={styles.panel} aria-labelledby="apply-title">
         <p className={styles.eyebrow}>Aplicar na guitarra</p>

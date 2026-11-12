@@ -103,3 +103,32 @@ describe('Lição de intervalos', () => {
     expect(screen.getByLabelText('Intervalo')).toHaveValue('terca');
   });
 });
+
+it('usa o player WAV no botão principal e interrompe ao mudar de tom', async () => {
+  const { vi } = await import('vitest');
+  const play = vi
+    .spyOn(HTMLMediaElement.prototype, 'play')
+    .mockResolvedValue(undefined);
+  const pause = vi
+    .spyOn(HTMLMediaElement.prototype, 'pause')
+    .mockImplementation(() => {});
+  try {
+    const user = userEvent.setup();
+    const { container, unmount } = renderApp('/estudo');
+    const player = container.querySelector('audio')!;
+    expect(player.src).toMatch(/^data:audio\/wav;base64,/);
+    await user.click(
+      screen.getByRole('button', { name: 'Ouvir as duas notas' }),
+    );
+    expect(play).toHaveBeenCalledOnce();
+    await user.selectOptions(screen.getByLabelText('Tônica'), '8');
+    expect(pause).toHaveBeenCalled();
+    expect(
+      screen.getByRole('button', { name: 'Ouvir as duas notas' }),
+    ).toBeEnabled();
+    unmount();
+  } finally {
+    play.mockRestore();
+    pause.mockRestore();
+  }
+});
