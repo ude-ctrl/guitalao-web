@@ -11,6 +11,7 @@ it('agenda tônica e intervalo, e interrompe o áudio e os destaques', async () 
   vi.stubGlobal(
     'AudioContext',
     class {
+      state = 'running';
       currentTime = 0;
       destination = {};
       resume = vi.fn().mockResolvedValue(undefined);
@@ -48,4 +49,19 @@ it('agenda tônica e intervalo, e interrompe o áudio e os destaques', async () 
   expect(close).toHaveBeenCalledOnce();
   expect(onEnd).toHaveBeenCalledOnce();
   expect(onNote).toHaveBeenCalledTimes(1);
+});
+
+it('inicia o contexto durante o clique, antes de aguardar a reprodução', async () => {
+  const resume = vi.fn().mockResolvedValue(undefined);
+  vi.stubGlobal(
+    'AudioContext',
+    class {
+      state = 'suspended';
+      resume = resume;
+      close = vi.fn().mockResolvedValue(undefined);
+    },
+  );
+  const playback = playInterval([45, 49], vi.fn(), vi.fn());
+  expect(resume).toHaveBeenCalledOnce();
+  await expect(playback).rejects.toThrow('Áudio suspenso');
 });

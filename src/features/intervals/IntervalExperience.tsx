@@ -1,3 +1,4 @@
+import { playInterval } from '../../audio/intervalPlayer';
 import { useEffect, useRef, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import {
@@ -53,8 +54,6 @@ export function IntervalExperience({
     setPlaying(true);
     setAudioError('');
     try {
-      const { playInterval } = await import('../../audio/intervalPlayer');
-      if (generation.current !== current) return;
       const cancel = await playInterval(
         [rootMidi, targetMidi],
         (index) => setActiveNote(index),

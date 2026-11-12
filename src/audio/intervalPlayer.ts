@@ -3,12 +3,31 @@ export async function playInterval(
   onNote: (index: number) => void,
   onEnd: () => void,
 ) {
-  const context = new AudioContext();
+  // Create and resume synchronously during the user's click, before any await.
+  const AudioContextClass =
+    window.AudioContext ??
+    (window as Window & { webkitAudioContext?: typeof AudioContext })
+      .webkitAudioContext;
+  if (!AudioContextClass) throw new Error('Web Audio indisponível');
+  const context = new AudioContextClass();
+  let timeout: ReturnType<typeof setTimeout> | undefined;
   try {
-    await context.resume();
+    await Promise.race([
+      context.resume(),
+      new Promise<never>((_, reject) => {
+        timeout = setTimeout(
+          () => reject(new Error('Áudio bloqueado pelo navegador')),
+          3000,
+        );
+      }),
+    ]);
+    if (context.state !== 'running')
+      throw new Error('Áudio suspenso pelo navegador');
   } catch (error) {
-    await context.close();
+    void context.close().catch(() => {});
     throw error;
+  } finally {
+    clearTimeout(timeout);
   }
   const timers: ReturnType<typeof setTimeout>[] = [];
   let stopped = false;

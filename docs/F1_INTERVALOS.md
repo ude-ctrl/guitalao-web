@@ -11,7 +11,7 @@ O recorte usa uma única corda para tornar explícita a relação casa–semitom
 - Contexto compartilhado por parâmetros `tom` e `intervalo` na rota hash. Links diretos funcionam no GitHub Pages.
 - Nenhum progresso armazenado. Respostas ficam apenas no componente.
 - Domínio musical puro separado da interface e do áudio.
-- Web Audio carregado somente após ação do usuário, com envelope curto e parada explícita; sem novas dependências.
+- Motor Web Audio incluído no bundle para criar e retomar o contexto diretamente no clique, com envelope curto e parada explícita; sem novas dependências. Nenhum contexto de áudio é criado antes da ação do usuário.
 - Som sintetizado, sem pretensão de simular timbre de guitarra.
 
 ## Validação e homologação
